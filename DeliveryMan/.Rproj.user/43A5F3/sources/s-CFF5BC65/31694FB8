@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1536773799874.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "31694FB8",
+    "lastKnownWriteTime" : 1537035027,
+    "last_content_update" : 1537035027517,
+    "path" : "~/Downloads/DeliveryMan/R/DM.R",
+    "project_path" : "R/DM.R",
+    "properties" : {
+        "cursorPosition" : "318,5",
+        "scrollLine" : "309"
+    },
+    "relative_order" : 1,
+    "source_on_save" : true,
+    "source_window" : "",
+    "type" : "r_source"
+}
