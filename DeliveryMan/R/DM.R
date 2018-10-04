@@ -55,36 +55,6 @@ manualDM=function(roads,car,packages) {
   if(car$load == 0){
     toGo=which(packages[,5]==0)[1]
     end <- list("x" = packages[toGo,1], "y" = packages[toGo,2])
-  }else if(car$load == 1){
-    if(packages[car$load, 5] == 0){
-      end <- list("x" = packages[car$load,1], "y" = packages[car$load,2])
-    }else if(packages[car$load, 5] == 1){
-      end <- list("x" = packages[car$load,3], "y" = packages[car$load,4])
-    }
-  }else if(car$load == 2){
-    if(packages[car$load, 5] == 0){
-      end <- list("x" = packages[car$load,1], "y" = packages[car$load,2])
-    }else if(packages[car$load, 5] == 1){
-      end <- list("x" = packages[car$load,3], "y" = packages[car$load,4])
-    }
-  }else if(car$load == 3){
-    if(packages[car$load, 5] == 0){
-      end <- list("x" = packages[car$load,1], "y" = packages[car$load,2])
-    }else if(packages[car$load, 5] == 1){
-      end <- list("x" = packages[car$load,3], "y" = packages[car$load,4])
-    }
-  }else if(car$load == 4){
-    if(packages[car$load, 5] == 0){
-      end <- list("x" = packages[car$load,1], "y" = packages[car$load,2])
-    }else if(packages[car$load, 5] == 1){
-      end <- list("x" = packages[car$load,3], "y" = packages[car$load,4])
-    }
-  }else if(car$load == 5){
-    if(packages[car$load, 5] == 0){
-      end <- list("x" = packages[car$load,1], "y" = packages[car$load,2])
-    }else if(packages[car$load, 5] == 1){
-      end <- list("x" = packages[car$load,3], "y" = packages[car$load,4])
-    }
   }
 
   
@@ -238,214 +208,8 @@ packageOn<-function(x,y,packages){
   return (0)
 }
 
-findClosestPackage<-function(xStart, yStart, xPack, yPack, packages){
-  shortestSteps = abs(xStart-xPack) + abs(yStart-yPack)
-
-  listOfSteps <- list()
-  listOfSteps = append(listOfSteps, shortestSteps)
-  listOfSteps = append(listOfSteps, xPack)
-  listOfSteps = append(listOfSteps, yPack)
-  list = list()
-  list2 = list()
-  list3 = list()
-  for(i in 1:5){
-    list  = append(list, listOfSteps[[i]])
-    list2 = append(list2, listOfSteps[[5+i]])
-    list3 = append(list3, listOfSteps[[10+i]])
-  }
-  vector = unlist(list, use.names=FALSE)
-  vector2 = unlist(list2, use.names=FALSE)
-  vector3 = unlist(list3, use.names=FALSE)
-
-  finalList = list(c(vector), c(vector2), c(vector3))
-  return (finalList)
-}
 
 
-
-memoryListFunc <- function(x, y, list, nextMove){
-  elementVector <- c(x, y, nextMove)
-  list = replace(list, 1, elementVector)
-  #list = list[1] <-elementVector
-  print("DETTA ÄR LISTAN")
-  print(list)
-  return(list)
-}
-
-saveValue <- function(list){
-  savedList = list;
-  return(savedList)  
-}
-
-#l <- list(c(100, 100, 100, 100))
-
-
-ourDM<-function(roads, car, packages){
-  nextMove=0
-  #l <- list(c(100, 100, 100, 100))"
-  print("LENGTH IF MEM")
-  print(length(car$mem))
-  if(length(car$mem)==0){
-    memoryList = list(c(100, 100, 100, 100))
-  }
-  #memoryList = saveValue(l)
-  #memoryListCopy = memoryList
-  
-  if (car$load==0) {
-    listOfSteps = findClosestPackage(car$x, car$y, packages[,1], packages[,2], packages)
-    packages <- cbind(packages, findShortestSteps(car$x, car$y, packages[,1], packages[,2], packages))
-    packages <- packages[order(packages[,6], decreasing = FALSE),]
-    print(packages)
-    #c(north, south, west, east)
-    vectorOfMoves <- c(1000, 1000, 1000, 1000)
-    vectorOfStreets <- c(roads$vroads[((car$y)+1)], roads$vroads[((car$y)-1)], roads$hroads[((car$x)-1)], roads$hroads[((car$x)+1)])
-    minVectorOfStreets <- min(vectorOfStreets)
-    
-    print(vectorOfMoves)
-    if(roads$vroads[(car$y)+1]>0){
-      closeNorth = min((findShortestSteps(car$x, (car$y)+1, packages[,1], packages[,2], packages)) + (roads$vroads[((car$y)+1)])/10)
-      closeNorth = closeNorth*minVectorOfStreets
-      print("CLOSEST NORTH")
-      print(min(findShortestSteps(car$x, (car$y)+1, packages[,1], packages[,2], packages)))
-      vectorOfMoves[1]<-closeNorth
-    }
-    if(car$y-1 > 0 && roads$vroads[(car$y-1)]>=0){
-      closeSouth = min(findShortestSteps(car$x, (car$y-1), packages[,1], packages[,2], packages) + (roads$vroads[((car$y)-1)])/10)
-      closeSouth = closeSouth*minVectorOfStreets
-      print("CLOSEST SOUTH")
-      print(closeSouth)
-      vectorOfMoves[2]<-closeSouth
-      
-    }
-    if((car$x > 1) && roads$hroads[(car$x-1)]>=0){
-      closeWest = min(findShortestSteps((car$x-1), car$y, packages[,1], packages[,2], packages) + (roads$hroads[((car$x)-1)])/10)
-      closeWest = closeWest*minVectorOfStreets
-      print("CLOSEST WEST")
-      print(closeWest)
-      vectorOfMoves[3]<-closeWest
-    }
-    if(roads$hroads[(car$y)+1]>0){
-      closeEast = min(findShortestSteps((car$x+1), car$y, packages[,1], packages[,2], packages)+ (roads$hroads[((car$x)+1)])/10)
-      closeEast = closeEast*minVectorOfStreets
-      print("CLOSEST EAST")
-      print(closeEast)
-      vectorOfMoves[4]<-closeEast
-      
-    }
-    print("Vector of moves after everything")
-    print(vectorOfMoves)
-    #toGo=which(packages[,5]==0)[1]
-    
-  } else {
-    print(packages)
-    #c(north, south, west, east)
-    vectorOfMoves <- c(1000, 1000, 1000, 1000)
-    vectorOfStreets <- c(roads$vroads[((car$y)+1)], roads$vroads[((car$y)-1)], roads$hroads[((car$x)-1)], roads$hroads[((car$x)+1)])
-    minVectorOfStreets <- min(vectorOfStreets)
-    
-    print(vectorOfMoves)
-    if(roads$vroads[(car$y)+1]>0){
-      closeNorth = min(findShortestSteps(car$x, (car$y)+1, packages[,3], packages[,4], packages) + (roads$vroads[((car$y)+1)])/10)
-      closeNorth = closeNorth*minVectorOfStreets
-      print("CLOSEST NORTH")
-      print(min(findShortestSteps(car$x, (car$y)+1, packages[,3], packages[,4], packages)))
-      vectorOfMoves[1]<-closeNorth
-    }
-    if(car$y-1 > 0 && roads$vroads[(car$y-1)]>=0){
-      closeSouth = min(findShortestSteps(car$x, (car$y-1), packages[,3], packages[,4], packages) + (roads$vroads[((car$y)-1)])/10)
-      closeSouth = closeSouth*minVectorOfStreets
-      print("CLOSEST SOUTH")
-      print(closeSouth)
-      vectorOfMoves[2]<-closeSouth
-      
-    }
-    if((car$x > 1) && roads$hroads[(car$x-1)]>=0){
-      closeWest = min(findShortestSteps((car$x-1), car$y, packages[,3], packages[,4], packages) + (roads$hroads[((car$x)-1)])/10)
-      closeWest = closeWest*minVectorOfStreets
-      print("CLOSEST WEST")
-      print(closeWest)
-      vectorOfMoves[3]<-closeWest
-    }
-    if(roads$hroads[(car$y)+1]>0){
-      closeEast = min(findShortestSteps((car$x+1), car$y, packages[,3], packages[,4], packages) + (roads$hroads[((car$x)+1)])/10)
-      closeEast = closeEast*minVectorOfStreets
-      print("CLOSEST EAST")
-      print(closeEast)
-      vectorOfMoves[4]<-closeEast
-      
-    }
-    print("VECTOR OF MOVES IN ELSE STATEMENT")
-    print(vectorOfMoves)
-  }
-  checkDirection = which.min(vectorOfMoves)[1]
-  # 1 north
-  # 2 syd
-  # 3 east
-  # 4 west
-  print("LEGNBT OF PACKAGE")
-  print(length(packages[1,]))
-  if(length(packages[1,]) == 7){
-    print("YOEGAY")
-    print(packages[,7])
-    if(packages[,7]==1){
-      vectorOfMoves[2]<-1000
-    }else if(packages[,7]==2){
-      vectorOfMoves[1]<-1000
-    }else if(packages[,7]==3){
-      vectorOfMoves[4]<-1000
-    }else if(packages[,7]==4){
-      vectorOfMoves[3]<-1000
-    }
-  }
-  checkDirection = which.min(vectorOfMoves)[1]
-
-  if (checkDirection == 4) {nextMove=6}
-  else if (checkDirection == 3) {nextMove=4}
-  else if (checkDirection == 1) {nextMove=8}
-  else if (checkDirection == 2) {nextMove=2}
-  else {nextMove=5}    
-  
-  memoryList = memoryListFunc(car$x, car$y, memoryList, checkDirection)
-  packages <- cbind(packages, checkDirection)
-  print("LEGNBT OF PACKAGE TWO")
-  print(length(packages[1,]))
-  print(packages)
-  print("MEMORY LIST")
-  print(memoryList)
-  car$nextMove=nextMove
-  car$mem=list()
-  return(car)
-  
-  # if (car$x<packages[toGo,1+offset]) {nextMove=6}
-  # else if (car$x>packages[toGo,1+offset]) {nextMove=4}
-  # else if (car$y<packages[toGo,2+offset]) {nextMove=8}
-  # else if (car$y>packages[toGo,2+offset]) {nextMove=2}
-  # else {nextMove=5}
-  # car$nextMove=nextMove
-  # car$mem=list()
-  # return (car)
-}  
-
-findCloseRoadsCost <- function(carX, carY, roads){
-  vectorOfMoves <- c(1000, 1000, 1000, 1000)
-  if(carY+1<11 && roads$vroads[(carY)+1]>0){
-    closeNorth <- roads$vroads[(carY)+1]
-    vectorOfMoves[1] <- closeNorth
-  }
-  if(carY-1>0 && roads$vroads[(carY)-1]>=0){
-    closeSouth <- roads$vroads[(carY)-1]
-    vectorOfMoves[2] <- closeSouth
-  }
-  if(carX+1<11 && roads$hroads[(carX+1)]>0){
-    closeWest <- roads$hroads[(carX+1)]
-    vectorOfMoves[3] <- closeWest
-  }
-  if(carX-1>0 && roads$hroads[(carX-1)]>=0){
-    closeEast <- roads$hroads[(carX-1)]
-    vectorOfMoves <- closeEast
-  }
-  return(min(vectorOfMoves))
-}
 #Contains only the starting node at start. 
 getOpenList<-function(carX, carY, openList){
   openList = append(openList, c(carX, carY))
@@ -484,50 +248,94 @@ getRightHvalues <- function(load, carX, carY, packages){
   return(hScore)
 }
 
-getNeighbors <- function(currentX, currentY, packages, roads, car, path){
+getNeighbors <- function(currentX, currentY, packages, roads, car, path, end){
   listOfNeighbors = list()
   load = car$load
+  # temp <- c()
+  # if(currentY<10){
+  #   temp[length(temp+1)] <- roads$vroads[currentX, currentY]
+  # }
+  # if(currentY>1){
+  #   temp[length(temp+1)]<-roads$vroads[currentX, currentY-1]
+  # }
+  # if(currentX<10){
+  #   temp[length(temp+1)]<-roads$hroads[currentX, currentY]
+  # }
+  # if(currentX>1){
+  #   temp <-roads$hroads[currentX-1, currentY]
+  # }
+  # if(length(temp)>= 1){
+  #   smallestGscore = min(temp)
+  # }else{
+   smallestGscore = 1
+  
   if(currentY<10){
-    hScore = getRightHvalues(load, currentX, currentY+1, packages)
-    if(currentY == 10){
-      currentY = 9
-    }
+   # hScore = getRightHvalues(load, currentX, currentY+1, packages)
+    hScore = smallestGscore*(findShortestSteps(currentX, currentY+1, end$x, end$y))
     fScore = hScore + roads$vroads[currentX, currentY]
+    #ev bugg i reads 10x9
     listOfNeighbors = append(listOfNeighbors, list("NorthNeighbor" = list("x" = currentX, "y" = currentY+1, "gScore" = roads$vroads[currentX, currentY], "prevMove" = 8, "fScore" = fScore, "hScore" = hScore, "direction"= "NorthNeighbor", "path"= append(path, 8))))  
   }
   if(currentY>1){
-    hScore = getRightHvalues(load, currentX, currentY-1, packages)
-    if(currentX == 10){
-      currentX = 9
-    }
+    #hScore = getRightHvalues(load, currentX, currentY-1, packages)
+    hScore = smallestGscore*(findShortestSteps(currentX, currentY-1, end$x, end$y))
     fScore = hScore + roads$vroads[currentX, currentY-1]
     listOfNeighbors = append(listOfNeighbors, list("SouthNeighbor" = list("x" = currentX, "y" = currentY-1, "gScore" = roads$vroads[currentX, currentY-1], "prevMove" = 2, "fScore" = fScore, "hScore" = hScore, "direction" = "SouthNeighbor", "path"= append(path, 2))))  
   }
   if(currentX<10){
-    hScore = getRightHvalues(load, currentX+1, currentY, packages)
-    if(currentY == 10){
-      currentY = 9
-    }
+    #hScore = getRightHvalues(load, currentX+1, currentY, packages)
+    hScore = smallestGscore*(findShortestSteps(currentX+1, currentY, end$x, end$y))
     fScore = hScore + roads$hroads[currentX, currentY]
     listOfNeighbors = append(listOfNeighbors, list("EastNeighbor" = list("x" = currentX+1, "y" = currentY, "gScore" = roads$hroads[currentX, currentY], "prevMove" = 6, "fScore" = fScore, "hScore" = hScore, "direction" = "EastNeighbor", "path"= append(path, 6))))  
   }
   if(currentX>1){
-    hScore = getRightHvalues(load, currentX-1, currentY, packages)
-    if(currentY == 10){
-      currentY = 9
-    }
+    #hScore = getRightHvalues(load, currentX-1, currentY, packages)
+    hScore = smallestGscore*(findShortestSteps(currentX-1, currentY, end$x, end$y))
     fScore = hScore + roads$hroads[currentX-1, currentY]
     listOfNeighbors = append(listOfNeighbors, list("WestNeighbor" = list("x" = currentX-1, "y" = currentY, "gScore" = roads$hroads[currentX-1, currentY], "prevMove" = 4, "fScore" = fScore, "hScore" = hScore , "direction" = "WestNeighbor", "path"= append(path, 4)))) 
    }
   return(listOfNeighbors)
 }
 
+permutations = function(n){
+  if(n==1){
+    return(matrix(1))
+  } else {
+    recursive = permutations(n-1)
+    nr = nrow(recursive)
+    A = matrix(nrow=n*nr,ncol=n)
+    for(i in 1:n){
+      A[(i-1)*nr+1:nr,] = cbind(i,recursive+(recursive>=i))
+    }
+    return(A)
+  }
+}
+routeCalc = function(vector, packages, car){
+  total = abs(car$x - packages[vector[1],1]) + abs(car$y - packages[vector[1], 2])
+  for(i in 1:length(vector)){
+    if (i == 5){
+      total = total + (abs(packages[vector[i],1]- packages[vector[i],3])+abs(packages[vector[i],2]- packages[vector[i],4]))
+    }else{
+      A = (abs(packages[vector[i],1]- packages[vector[i],3])+abs(packages[vector[i],2]- packages[vector[i],4]))
+      B = (abs(packages[vector[i],3]- packages[vector[i+1],1]))+abs(packages[vector[i],4]- packages[vector[i+1],2])
+      C = A + B
+      total = total + C
+    }
+  }
+  return(total)
+}
 
+routeCalculator= function(packages,car){
+  allPermutations = permutations(nrow(packages))
+  routeValues = apply(allPermutations, 1, function(x) routeCalc(x, packages, car))
+  shortestRoute = which.min(routeValues)
+  ourRoute = allPermutations[shortestRoute,]
+  return(ourRoute)
+}
 
 aStar = function (roads, car, packages, start, end) {
   closedList <- list()
   openList <- list() 
-
   openList[[length(openList)+1]] <- (start)
   while (length(openList) > 0) {
     openList = openList[order(sapply(openList, `[[`, 5))]
@@ -537,8 +345,16 @@ aStar = function (roads, car, packages, start, end) {
     }
     openList = openList[-1]
     closedList[length(closedList)+1] = current
-    currentNeighbors = getNeighbors(current[[1]]$x, current[[1]]$y, packages, roads, car, current[[1]]$path)
+    currentNeighbors = getNeighbors(current[[1]]$x, current[[1]]$y, packages, roads, car, current[[1]]$path, end)
+    # print(end)
+    # print("CURERNT NEIGHTBORS")
+    # print(currentNeighbors)
+    
     for (neighbor in currentNeighbors) {
+      # temp = currentNeighbors[order(sapply(currentNeighbors, `[[`, 3))]
+      # temp = temp[[1]]$gScore
+      # neighbor$hScore <- neighbor$hScore*temp
+      
       if(checkForMatch(closedList, neighbor$x, neighbor$y)){
         next
       }
@@ -550,7 +366,6 @@ aStar = function (roads, car, packages, start, end) {
       else if (tempG >= neighbor$gScore) {
           next
       }
-
       current[[1]]$path <- append(current[[1]]$path, neighbor$prevMove)
       neighbor$gScore <- tempG
       neighbor$fScore <- neighbor$gScore + neighbor$hScore
@@ -570,12 +385,28 @@ findClosestZero <- function(carX, carY, packages){
 
 myFunction <- function(roads, car, packages){
   toGo=0
-  offset=
-  
-  indexClose <- findClosest(car$x, car$y, packages)
-    
+  offset=0
+  if(length(car$mem) == 0){
+    car$mem = routeCalculator(packages, car)
+  }
+  offset=0
+  if(car$load != 0) {
+    toGo = car$load
+    #offset=2
+    end <- list("x" = packages[toGo, 3], "y" = packages[toGo,4])
+  }else{
+    availablePackages = which(packages[,5] == 0)
+    car$mem = intersect(car$mem, availablePackages)
+    #print(car$mem)
+    toGo = car$mem[1]
+    end <- list("x" = packages[toGo, 1], "y" = packages[toGo,2])
+  }
+   # print(packages)
+   # print(end)
+  #stop("TJO", call = TRUE, domain = NULL)
+  # indexClose <- findClosestZero(car$x, car$y, packages)
   # if(car$load == 0){
-  #   toGo=which(packages[,5]==0)[1]
+  #   #toGo=findClosestZero(car$x, car$y, packages)
   #   end <- list("x" = packages[toGo,1], "y" = packages[toGo,2])
   # }else {
   #   if(packages[car$load, 5] == 0){
@@ -584,22 +415,15 @@ myFunction <- function(roads, car, packages){
   #     end <- list("x" = packages[car$load,3], "y" = packages[car$load,4])
   #   }
   # }
-  #print(packages)
-  if(car$load == 0){
-    toGo=findClosestZero(car$x, car$y, packages)
-    end <- list("x" = packages[toGo,1], "y" = packages[toGo,2])
-  }else {
-    if(packages[car$load, 5] == 0){
-      end <- list("x" = packages[car$load,1], "y" = packages[car$load,2])
-    }else if(packages[car$load, 5] == 1){
-      end <- list("x" = packages[car$load,3], "y" = packages[car$load,4])
-    }
-  }
-
   hScore = findShortestSteps(car$x, car$y, end$x, end$y) 
   start <- list("x" = car$x, "y" = car$y, "gScore" = 0, "prevMove" = 5, "fScore" = hScore + 0, "hScore" = hScore, "path" = list())
 
   bestMoveList = aStar(roads, car, packages, start, end)
+  # print("ASTAR SUGGESTED MOVES")
+  # print(bestMoveList)
+  # print(roads)
+  # print(packages)
+  #stop("BAJS, call=TRUE, domain =NULL")
   if(length(bestMoveList) == 0 ){
     nextMove = 5
   }else{
@@ -609,270 +433,6 @@ myFunction <- function(roads, car, packages){
   car$mem=list()
   return(car)
 }
-
-# if(packages[,5][1] == 0){
-#   end <- list("x" = packages[,1][1], "y" = packages[,2][1])
-# }else if(packages[,5][1]==2){
-#   n = which(packages[,5] == 0)
-#   end <- list("x" = packages[,1][n], "y" = packages[,2][n])
-# }else{
-#   end <- list("x" = packages[,3][1], "y" = packages[,4][1])
-# }
-# n = which(packages[,5] == 1)
-# if(length(n) == 0){
-#   packages <- cbind(packages, findShortestSteps(car$x, car$y, packages[,1], packages[,2]))
-#   packages <- packages[order(packages[,6], decreasing = FALSE),]
-# }else{
-#   packages <- packages[order(packages[,5], decreasing = TRUE),]
-# }
-# if(packages[,5][1] == 2){
-#   if(!is.null(nrow(packages))){
-#     packages <- packages[-c(1),]
-#   }
-# }
-
-
-# if (car$x<packages[toGo,1+offset]) {nextMove=6}
-# else if (car$x>packages[toGo,1+offset]) {nextMove=4}
-# else if (car$y<packages[toGo,2+offset]) {nextMove=8}
-# else if (car$y>packages[toGo,2+offset]) {nextMove=2}
-# else {nextMove=5}
-# car$nextMove=nextMove
-# findShortestSteps <- function(xStart, yStart, xPack, yPack, packages, roads){
-#   shortestSteps = abs(xStart-xPack) + abs(yStart-yPack)
-#   #roadCost = findCloseRoadsCost(xStart, yStart, roads)
-#   #return(roadCost * shortestSteps)
-#   return(shortestSteps)
-# }
-# removeFromOpenList <- function(openList, currentX, currentY){
-#   xs = sapply(openList, function(elem) elem$x)
-#   ys = sapply(openList, function(elem) elem$y)
-#   if(any(xs == x & ys == y)){
-#     
-#   }
-#   for (n in 1:length(openList)) {
-#     if(currentX == (lapply(openList, '[[', 1))[n] && currentY == (lapply(openList, '[[', 2))[n]){
-#       openList[[n]] <- NULL
-#     }
-#   }
-# }
-# getNeighbors <- function(car, packages, roads){
-#   listOfNeighbors = list()
-#   if(car$y+1<11){
-#     if(car$load == 0){
-#        fScore= findShortestSteps(car$x, car$y+1, packages[,1], packages[,2], packages, roads)[1]
-#     }else if(car$load == 1){
-#       fScore= findShortestSteps(car$x, car$y+1, packages[,3], packages[,4], packages, roads)[1]
-#     }
-#     listOfNeighbors = append(listOfNeighbors, list("NorthNeighbor" = list("x" = car$x, "y" = car$y+1, "gScore" = roads$vroads[((car$y)+1)], "prevMove" = 8, "fScore" = fScore)))  
-#     }
-#   if(car$y-1>0){
-#     if(car$load == 0){
-#       fScore= findShortestSteps(car$x, car$y-1, packages[,1], packages[,2], packages, roads)[1]
-#     }else if(car$load == 1){
-#       fScore= findShortestSteps(car$x, car$y-1, packages[,3], packages[,4], packages, roads)[1]
-#     }
-#     listOfNeighbors = append(listOfNeighbors, list("SouthNeighbor" = list("x" = car$x, "y" = car$y-1, "gScore" = roads$vroads[((car$y)-1)], "prevMove" = 2, "fScore" = fScore)))  
-#   }
-#   if(car$x+1<11){
-#     if(car$load == 0){
-#       fScore= findShortestSteps(car$x+1, car$y, packages[,1], packages[,2], packages, roads)[1]
-#     }else if(car$load == 1){
-#       fScore= findShortestSteps(car$x+1, car$y, packages[,3], packages[,4], packages, roads)[1]
-#     }
-#     listOfNeighbors = append(listOfNeighbors, list("EastNeighbor" = list("x" = car$x+1, "y" = car$y, "gScore" = roads$hroads[((car$x)-1)], "prevMove" = 6, "fScore" = fScore)))  
-#     
-#     
-#     }
-#   if(car$x-1>0){
-#     if(car$load == 0){
-#       fScore= findShortestSteps(car$x-1, car$y, packages[,1], packages[,2], packages, roads)[1]
-#     }else if(car$load == 1){
-#       fScore= findShortestSteps(car$x-1, car$y, packages[,3], packages[,4], packages, roads)[1]
-#     }
-#     listOfNeighbors = append(listOfNeighbors, list("WestNeighbor" = list("x" = car$x-1, "y" = car$y, "gScore" = roads$hroads[((car$x)+1)], "prevMove" = 4, "fScore" = fScore))) 
-#     
-#     }
-#   return(listOfNeighbors)
-# }
-# getPath <- function(cameFrom, current){
-#   path <- list()
-#   while (h) {
-#     
-#   }
-#   print("DONE")
-#   return(path)
-# }
-# # if(length(closedList)>0 && checkForMatch(closedList, current$x, current$y)){
-# checkForMatch <- function(openList, x, y){
-#   print("PRINTING X AND Y IN CHECKFORMATCH")
-#   print(x)
-#   print(y)
-#   print("PRINTING THE OPENLIST")
-#   print(openList)
-#   if(length(openList)== 0){
-#     return(FALSE)
-#   }
-#   xs = sapply(openList, function(elem) elem$x)
-#   ys = sapply(openList, function(elem) elem$y)
-#   (any(xs == x & ys == y))
-# }
-# aStar<-function(roads, car, packages){
-#   #bind the heurisic cost from current node to end node to [,6]
-#   packages <- cbind(packages, findShortestSteps(car$x, car$y, packages[,1], packages[,2], packages, roads))
-#   packages <- packages[order(packages[,6], decreasing = FALSE),]
-#   #makes the current position the start position, car$x, car$y, g-score, list containing move to get there
-#   start <- list("x" = car$x, "y" = car$y, "gScore" = 0, "prevMove" = 5, "fScore" = findShortestSteps(car$x, car$y, packages[,1], packages[,2], packages, roads)[1])
-#   #makes the node with lowert manhattan distance x and y delivery the 
-#   if(car$load == 0){
-#     end <- list("x" = packages[,1][1], "y" = packages[,2][1])
-#   }else if (car$load == 1){
-#     end <- list("x" = packages[,3][1], "y" = packages[,4][1])
-#   }
-#   #Stores all the nodes that has finished being evaluated, everything done that you never again have to visit
-#   closedList <- list()
-#   # closedList[[1]] <- list("x" = 1000, "y" = 1002)
-#   # closedList[[2]] <- list("x" = 2000, "y" = 2002)
-#   # closedList2 <- list()
-#   # closedList2 <- append(closedList2, list("x" = 1000, "y" = 1002))
-#   # closedList2 <- append(closedList2, list("x" = 2000, "y" = 2002))
-#   # print("CLOSED LIST MYWAY")
-#   # print(closedList)
-#   # print("CLOSED LIST APPEND")
-#   # print(closedList2)
-#   #Stores nodes that still need to be checked. Algoritm is finished when Open is empty
-#   openList <- list()
-#   print("START")
-#   print(start)
-#   #openList = append(openList, list(start))
-#   
-#   openList[[length(openList)+1]] <- start
-#   print("OPENLIST")
-#   print(openList)
-#   #ManhattanDistance
-#   if(car$load == 0){
-#     fCost <- findShortestSteps(car$x, car$y, packages[,1], packages[,2], packages, roads)[1]
-#   }else if (car$load == 1){
-#     fCost <- findShortestSteps(car$x, car$y, packages[,3], packages[,4], packages, roads)[1]
-#   }
-#   #Stores all the nodes that has finished 
-#   cameFrom <- list()
-#   #Cost of roads to that node. 
-#   gCost <- list(0)
-#   while(length(openList)>0){
-#     print("OOOOOOPEN LIST")
-#     print(openList)
-#     #openList <- as.data.frame(lapply(openList, unlist))
-#     print("AS UNLIST")
-#     print(openList)
-#     #openList = openList[order(sapply(openList, `[[`, openList$fScore))]
-#     #openList[order(openList$fScore), ] 
-#     
-#     openList[order(sapply(openList, function(x) x[5], simplify=TRUE), decreasing=TRUE)]
-#     #openList = openList[order(sapply(openList, `[[`, 5))]
-#     
-#     
-#    # openList[order(sapply(openList, function(x) x$fScore, simplify = TRUE), decreasing = FALSE)]
-#     print("BAJSBAJS")
-#     print(openList)
-#     #The node in the openlist with lowest fscore
-#     current = openList[[1]]
-#     print("CURRENT IS THIS:")
-#     print(current)
-#     print("THIS IS closedList")
-#     print(closedList)
-#     #tjo = list("x"= 5, "y" = 5)
-#    # closedList = append(closedList, list(tjo))
-#     if(length(closedList)>0 && checkForMatch(closedList, current$x, current$y)){
-#       next
-#     }
-#     #print("Open list")
-#     #print(openList[[1]])
-#     print("THIS IS END")
-#     print(end)
-#     print("THIS IS OPENLIST")
-#     print(openList)
-#     print("THIS IS CURRENT")
-#     print(current$x)
-#     print(current$y)
-#     if((current$x == end$x) & (current$y == end$y)){
-#       print("DONE HO")
-# 
-#     }
-#     #maybe dont remove this
-#     #removeFromOpenList(openList,current$x,current$y)
-#     closedList = append(closedList,  list(current))
-#     #closedList[[length(closedList)+1]] <- list(current)
-#     currentNeighbors = getNeighbors(car, packages, roads)
-#   
-#     for (i in 1:length(currentNeighbors)) {
-#       neighbor = currentNeighbors[i]
-#       #unsure about this one
-#       tempG <-current$gScore + neighbor$gScore + neighbor$fScore
-#       if(!(checkForMatch(openList,neighbor$x,neighbor$y))){
-#         openList = append(openList, list(neighbor))
-#         #openList[[length(openList)+1]] <- list(neighbor)
-#         
-#       }else if(tempG >= neighbor$gScore) {
-#         closedList = append(closedList, list(current))
-#         #closedList[[length(closedList)+1]] <- list(current)
-#         openList[[i]] <- NULL
-#         next
-#       }
-#       cameFrom = append(cameFrom, list(current))
-#       #cameFrom[[length(cameFrom)+1]] <- list(current)
-#       
-#       neighbor$gScore <- tempG
-#       if(car$load == 0){
-#         fCostNeighbor <- findShortestSteps(current$x, current$y, packages[,1], packages[,2], packages, roads)[1]
-#       }else if (car$load == 1){
-#         fCostNeighbor <- findShortestSteps(current$x, current$y, packages[,3], packages[,4], packages, roads)[1]
-#       }
-#       neighbor$fScore <- neighbor$gScore + fCostNeighbor
-#       }
-#     }
-# }
-# starDM<-function(roads, car, packages){
-#   openList <- list()
-#   closedList <- list()
-#   packages <- cbind(packages, findShortestSteps(car$x, car$y, packages[,1], packages[,2], packages, roads))
-#   packages <- packages[order(packages[,6], decreasing = FALSE),]
-#   smallestRoad = findCloseRoadsCost(car$x, car$y, roads)
-#   print(packages)
-#   print(smallestRoad)
-#   openList <- getOpenList(car$x, car$y, openList)
-#   print(length(openList))
-#   if(length(closedList) != 0){
-#     closedList <- getClosedList(car$x, car$y, closedList, lapply(openList, `[[`, 1), lapply(openList, `[[`, 2))
-#   }else{
-#     closedList <- getClosedList(car$x, car$y, closedList, "NA", "NA")
-#   }
-#   print("OPEN LIST")
-#   print(openList)
-#   print("CLOSED LIST")
-#   print(closedList)
-#   print("DELIVERY X")
-#   print(packages[,3][1])
-#   print("DELIVERY S")
-#   print(packages[,4][1])
-#   print("lapply(openList, `[[`, 1)")
-#   #print(lapply(openList, `[[`, 1))
-#   print("lapply(openList, `[[`, 2)")
-#   #print(lapply(openList, `[[`, 2))
-#   while(lapply(openList, `[[`, 1) == packages[,3][1] && lapply(openList, `[[`, 2) == packages[,4][1]){
-#     
-#   }
-#   car$nextMove=readline("Enter next move. Valid moves are 2,4,6,8,0 (directions as on keypad) or q for quit.")
-#   if (car$nextMove=="q") {stop("Game terminated on user request.")}
-#   return(car)
-# }
-# if (car$x<packages[toGo,1+offset]) {nextMove=6}
-# else if (car$x>packages[toGo,1+offset]) {nextMove=4}
-# else if (car$y<packages[toGo,2+offset]) {nextMove=8}
-# else if (car$y>packages[toGo,2+offset]) {nextMove=2}
-# else {nextMove=5}
-# car$nextMove=nextMove
-# car$mem=list()
 
 #' @keywords internal
 processNextMove<-function(car,roads,dim) {
